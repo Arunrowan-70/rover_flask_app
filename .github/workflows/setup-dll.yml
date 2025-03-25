@@ -28,7 +28,7 @@ jobs:
       with:
         repo: Arunrowan-70/fsm_rover
         workflow: c-cpp.yml
-        name: libroverfsm-dll.zip  # Match the ZIP name
+        name: libroverfsm-dll  # Match the ZIP name
         path: lib/
         branch: main
         workflow_conclusion: success
