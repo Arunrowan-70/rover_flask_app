@@ -34,12 +34,10 @@ jobs:
         workflow_conclusion: success
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Extract DLL from ZIP
+     - name: Extract DLL from Artifact
       run: |
-        cd lib
-        tar -xf libroverfsm-dll.zip  # Extract the ZIP
-        del libroverfsm-dll.zip      # Clean up
-
+        move lib/libroverfsm.dll .  # Move DLL to project root (optional)
+    
     - name: Debug downloaded files
       run: dir lib\
 
