@@ -34,11 +34,7 @@ jobs:
         workflow_conclusion: success
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Unzip the DLL
-      run: |
-        powershell -Command "Expand-Archive -Path lib/libroverfsm-dll.zip -DestinationPath lib/ -Force"
-
-    - name: Debug extracted files
+    - name: Debug downloaded files
       run: dir lib\
 
     - name: Run Flask App (Test)
