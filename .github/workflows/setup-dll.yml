@@ -16,7 +16,7 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.11'  # Match your local Python version
+        python-version: '3.11'
 
     - name: Install dependencies
       run: |
@@ -28,11 +28,17 @@ jobs:
       with:
         repo: Arunrowan-70/fsm_rover
         workflow: build-dll.yml
-        name: libroverfsm-dll
+        name: libroverfsm-dll.zip  # Match the ZIP name
         path: lib/
         branch: main
         workflow_conclusion: success
         github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Extract DLL from ZIP
+      run: |
+        cd lib
+        tar -xf libroverfsm-dll.zip  # Extract the ZIP
+        del libroverfsm-dll.zip      # Clean up
 
     - name: Debug downloaded files
       run: dir lib\
