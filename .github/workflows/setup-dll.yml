@@ -8,7 +8,7 @@ on:
 
 jobs:
   setup:
-    runs-on: windows-latest  # Use Windows since DLL and Flask need to run together
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v4
@@ -30,9 +30,15 @@ jobs:
         workflow: build-dll.yml
         name: libroverfsm-dll
         path: lib/
+        branch: main
+        workflow_conclusion: success
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Debug downloaded files
+      run: dir lib\
 
     - name: Run Flask App (Test)
       run: |
         python app.py &
-        timeout /t 10  # Wait 10 seconds to let Flask start
-        curl http://localhost:5000/  # Test the root endpoint
+        timeout /t 10
+        curl http://localhost:5000/
