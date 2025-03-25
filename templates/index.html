@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Toggle Button</title>
+    <style>
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            margin-right: 10px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ff4d4d; /* Red for off */
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #4CAF50; /* Green for on */
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 5px 10px;
+        }
+
+        .disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
+    <script>
+        function toggleButton() {
+            fetch('/toggle', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('toggle-btn').innerText = data.onoff;
+                    updateStateDisplay(data.onoff, data.state);
+                });
+        }
+
+        function updateState() {
+            fetch('/get_state')
+                .then(response => response.json())
+                .then(data => {
+                    updateStateDisplay(data.onoff, data.state);
+                });
+        }
+        function prepare(){
+            if(allsensorsActivated()){
+                fetch('/prepare')
+                .then(response => response.json())
+                .then(data => {
+                    updateStateDisplay(data.onoff, data.state);
+                    document.getElementById('msg').innerText = "All sensors enabled";
+                });
+            }else{
+                document.getElementById('msg').innerText = "Enable all sensors to prepare";
+            }
+            
+        }
+        function updateStateDisplay(onoff, state) {
+            const stateDisplay = document.getElementById('state-display');
+            if (onoff === 1) {
+                stateDisplay.innerText = `State: ${state}`; // Show state when onoff is 1
+            } else {
+                stateDisplay.innerText = "ROVER_OFF"; // Clear when onoff is 0
+            }
+        }
+
+        function allsensorsActivated(){
+            const camera=document.getElementById('camera').checked;
+            const ultrasonic=document.getElementById('ultrasonic').checked;
+            const radar=document.getElementById('radar').checked;
+
+            return camera && ultrasonic && radar;
+        }
+        
+
+        // Auto-update state every 2 seconds
+        setInterval(updateState, 1000);
+        function handleSensorToggle(sid){
+            const sensor =document.getElementById(sid)
+            const isEnabled=sensor.checked;
+            const wasEnabled=sensor.dataset.wasEnabled === 'true'
+
+            if(wasEnabled && !isEnabled){
+                fetch('/reset', {method : 'POST'})
+                    .then(response=>response.json())
+                    .then(data => {
+                        document.getElementById('msg').innerText=`${sid} disabled, State Machine reset`;
+                    })
+            }
+            sensor.dataset.wasEnabled = isEnabled;
+        }
+        window.onload=function(){
+            const sensors=['camera', 'ultrasonic', 'radar']
+            sensors.forEach(sid => {
+                const sensor=document.getElementById(sid);
+                sensor.dataset.wasEnabled=sensor.checked;
+                sensor.addEventListener('change',()=>handleSensorToggle(sid))
+            })
+        }
+    </script>
+</head>
+<body>
+    <button id="toggle-btn" onclick="toggleButton()">{{ onoff }}</button>
+    <button id="prepare" onclick="prepare()">Prepare</button>
+    <p id="state-display"></p>
+    <p id="msg"></p>
+    <div>
+        <label class="switch">
+            <input type="checkbox" id="camera">
+            <span class="slider"></span>
+        </label>
+        <span>Camera</span>
+    </div>
+    <div>
+        <label class="switch">
+            <input type="checkbox" id="ultrasonic">
+            <span class="slider"></span>
+        </label>
+        <span>Ultrasonic Sensor</span>
+    </div>
+    <div>
+        <label class="switch">
+            <input type="checkbox" id="radar">
+            <span class="slider"></span>
+        </label>
+        <span>Radar</span>
+    </div>
+</body>
+</html>

@@ -1,0 +1,38 @@
+name: Setup Flask App with DLL
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  setup:
+    runs-on: windows-latest  # Use Windows since DLL and Flask need to run together
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'  # Match your local Python version
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flask
+
+    - name: Download DLL from fsm_rover
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        repo: Arunrowan-70/fsm_rover
+        workflow: build-dll.yml
+        name: libroverfsm-dll
+        path: lib/
+
+    - name: Run Flask App (Test)
+      run: |
+        python app.py &
+        timeout /t 10  # Wait 10 seconds to let Flask start
+        curl http://localhost:5000/  # Test the root endpoint
