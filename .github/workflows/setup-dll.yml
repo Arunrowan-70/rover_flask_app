@@ -47,8 +47,3 @@ jobs:
         Start-Process -FilePath "python" -ArgumentList "app.py" -NoNewWindow
         Start-Sleep -Seconds 10
         curl http://localhost:5000/
-
-      run: |
-        python app.py &
-        timeout /t 10
-        curl http://localhost:5000/
