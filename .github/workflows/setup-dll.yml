@@ -34,12 +34,18 @@ jobs:
         workflow_conclusion: success
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
-     - name: Extract DLL from Artifact
+    - name: Extract DLL from Artifact
       run: |
         move lib/libroverfsm.dll .  # Move DLL to project root (optional)
     
     - name: Debug downloaded files
       run: dir lib\
+
+    - name: Run Flask App (Test)
+      run: |
+        python app.py &
+        timeout /t 10
+        curl http://localhost:5000/
 
     - name: Run Flask App (Test)
       run: |
