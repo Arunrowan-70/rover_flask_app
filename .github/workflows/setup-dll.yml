@@ -42,12 +42,12 @@ jobs:
       run: dir lib\
 
     - name: Run Flask App (Test)
+      shell: pwsh
       run: |
-        python app.py &
-        timeout /t 10
+        Start-Process -FilePath "python" -ArgumentList "app.py" -NoNewWindow
+        Start-Sleep -Seconds 10
         curl http://localhost:5000/
 
-    - name: Run Flask App (Test)
       run: |
         python app.py &
         timeout /t 10
