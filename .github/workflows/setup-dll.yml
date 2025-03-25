@@ -27,7 +27,7 @@ jobs:
       uses: dawidd6/action-download-artifact@v2
       with:
         repo: Arunrowan-70/fsm_rover
-        workflow: build-dll.yml
+        workflow: c-cpp.yml
         name: libroverfsm-dll.zip  # Match the ZIP name
         path: lib/
         branch: main
