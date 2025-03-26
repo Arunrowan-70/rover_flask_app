@@ -27,7 +27,7 @@ jobs:
       uses: dawidd6/action-download-artifact@v2
       with:
         repo: Arunrowan-70/fsm_rover
-        workflow: c-cpp.yml  # Fixed to match fsm_rover workflow
+        workflow: c-cpp.yml
         name: libroverfsm-dll
         path: lib/
         branch: main
@@ -49,8 +49,11 @@ jobs:
         cd D:\a\rover_flask_app\rover_flask_app || echo "CD failed"
         echo Verifying lib directory:
         dir lib\
-        echo Running Flask app...
-        python app.py > flask.log 2>&1 || echo "Python failed"
+        echo Running Flask app in background...
+        start /b python app.py > flask.log 2>&1
         timeout /t 10
+        echo Checking Flask server...
         curl http://localhost:5000/ || echo "Curl failed, checking logs..."
         type flask.log
+        echo Stopping Flask app...
+        taskkill /IM python.exe /F 2>nul || echo "No Flask process to kill"
