@@ -27,22 +27,24 @@ jobs:
       uses: dawidd6/action-download-artifact@v2
       with:
         repo: Arunrowan-70/fsm_rover
-        workflow: c-cpp.yml  # Must match the workflow name in fsm_rover
-        name: libroverfsm-dll    # Must match the artifact name in fsm_rover
+        workflow: c-cpp.yml  # Corrected to match fsm_rover workflow
+        name: libroverfsm-dll    # Matches artifact name in fsm_rover
         path: lib/
         branch: main
         workflow_conclusion: success
         github_token: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Debug downloaded files
+      shell: cmd
       run: dir lib\
-      shell: cmd  # Ensure dir works correctly
 
     - name: Run Flask App (Test)
       shell: cmd
       run: |
         echo Starting Flask app...
+        cd D:\a\rover_flask_app\rover_flask_app  # Ensure correct working directory
+        dir lib\  # Verify DLL is still there
         python app.py > flask.log 2>&1 &
-        timeout /t 10  # Wait 10 seconds for server to start
+        timeout /t 10  # Wait 10 seconds
         curl http://localhost:5000/ || echo "Curl failed, checking logs..."
-        type flask.log  # Show Flask output for debugging
+        type flask.log  # Show Flask output
